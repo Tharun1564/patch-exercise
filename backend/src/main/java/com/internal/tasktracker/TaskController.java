@@ -35,7 +35,18 @@ public class TaskController {
         // Parse status filter
         String normalizedStatus = null;
         if (status != null && !status.isEmpty()) {
-            normalizedStatus = TaskStatus.valueOf(status.toUpperCase()).name();
+            try {
+                normalizedStatus = TaskStatus.valueOf(status.toUpperCase()).name();
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Invalid status: " + status));
+            }
+        }
+
+         // Validate paging parameters
+        if (page < 1 || pageSize < 1 || pageSize > 100) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "page must be >= 1 and pageSize must be between 1 and 100"));
         }
 
        
